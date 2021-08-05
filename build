@@ -16,9 +16,9 @@ arm64v8='http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz'
 LATEST_TARBALL="${!DOCKER_ARCH}"
 FILENAME="${LATEST_TARBALL##*/}"
 EXTRACTED_FILENAME="${FILENAME%.*}"
-wget "${LATEST_TARBALL}"
-wget "${LATEST_TARBALL}.md5"
-wget "${LATEST_TARBALL}.sig"
+wget -q "${LATEST_TARBALL}"
+wget -q "${LATEST_TARBALL}.md5"
+wget -q "${LATEST_TARBALL}.sig"
 
 # verify download is valid
 md5sum -c "${FILENAME}.md5" || die "Checksum failed"
