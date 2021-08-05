@@ -21,11 +21,7 @@ wget "${LATEST_TARBALL}.md5"
 wget "${LATEST_TARBALL}.sig"
 
 # verify download is valid
-ARCHLINUXARM_SIGNING_ID=68B3537F39A313B3E574D06777193F152BDBE6A6
-gpg --fetch-key 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x'"${ARCHLINUXARM_SIGNING_ID}"
 md5sum -c "${FILENAME}.md5" || die "Checksum failed"
-echo -e "5\ny\n" | gpg --command-fd 0 --edit-key "${ARCHLINUXARM_SIGNING_ID}" trust
-gpg --verify "${FILENAME}.sig" || die "Signature verify failed"
 gzip -d "${FILENAME}"
 
 docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
