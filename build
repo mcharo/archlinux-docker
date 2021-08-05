@@ -9,6 +9,9 @@ error() { out "==> ERROR:" "$@"; } >&2
 die() { error "$@"; exit 1; }
 
 # get latest Arch Linux tarball
+LATEST_AMD64_URL='http://mirror.rackspace.com/archlinux/iso/latest'
+LATEST_AMD64_FILENAME=$(curl -sL "${LATEST_AMD64_URL}" | grep 'tar.gz' | sed -E 's/.*href="(.*)".*/\1/g' | grep -v '.sig')
+amd64="${LATEST_AMD64_URL}/${LATEST_AMD64_FILENAME}"
 arm32v5='http://os.archlinuxarm.org/os/ArchLinuxARM-armv5-latest.tar.gz'
 arm32v6='http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-latest.tar.gz'
 arm32v7='http://os.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz'
@@ -17,8 +20,12 @@ LATEST_TARBALL="${!DOCKER_ARCH}"
 FILENAME="${LATEST_TARBALL##*/}"
 EXTRACTED_FILENAME="${FILENAME%.*}"
 wget -q "${LATEST_TARBALL}"
-wget -q "${LATEST_TARBALL}.md5"
-wget -q "${LATEST_TARBALL}.sig"
+if [[ "${DOCKER_ARCH}" = "amd64" ]]; then
+  wget -q "${LATEST_AMD64_URL}/md5sums.txt"
+  grep "${FILENAME}" md5sums.txt > "${FILENAME}.md5"
+else
+  wget -q "${LATEST_TARBALL}.md5"
+fi
 
 # verify download is valid
 md5sum -c "${FILENAME}.md5" || die "Checksum failed"
@@ -28,8 +35,8 @@ docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base
 
 docker build --build-arg ARCH=${DOCKER_ARCH} \
   -t $DOCKER_ORG/$DOCKER_IMAGE \
-	-f Dockerfile .
+  -f Dockerfile .
 
 docker build --build-arg ARCH=${DOCKER_ARCH} \
   -t $DOCKER_ORG/$DOCKER_IMAGE:devel \
-	-f Dockerfile.devel .
+  -f Dockerfile.devel .
