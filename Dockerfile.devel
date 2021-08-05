@@ -1,5 +1,5 @@
-ARG ARCH=amd64
-FROM lopsided/archlinux-$ARCH
+ARG ARCH=arm64v8
+FROM mcharo/archlinux-$ARCH
 
 RUN pacman -Syu --noconfirm --needed base-devel
 

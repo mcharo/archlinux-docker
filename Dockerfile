@@ -1,5 +1,5 @@
-ARG ARCH=amd64
-FROM lopsided/archlinux-$ARCH
+ARG ARCH=arm64v8
+FROM mcharo/archlinux-$ARCH:latest-base
 
 WORKDIR /archlinux
 
@@ -13,7 +13,7 @@ RUN ./pacstrap-docker /archlinux/rootfs \
     rm rootfs/var/lib/pacman/sync/*
 
 FROM scratch
-ARG ARCH=amd64
+ARG ARCH=arm64v8
 
 COPY --from=0 /archlinux/rootfs/ /
 COPY rootfs/common/ /
@@ -23,6 +23,6 @@ ENV LANG=en_US.UTF-8
 
 RUN locale-gen && \
     pacman-key --init && \
-    (pacman-key --populate archlinux || pacman-key --populate archlinuxarm)
+    (pacman-key --populate archlinuxarm || pacman-key --populate archlinux)
 
 CMD ["/usr/bin/bash"]

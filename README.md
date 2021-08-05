@@ -1,16 +1,16 @@
-# Basic Arch Linux Docker images ![build](https://github.com/lopsided98/archlinux-docker/workflows/build/badge.svg)
+# Basic Arch Linux Docker images ![build](https://github.com/mcharo/archlinux-docker/workflows/build/badge.svg)
 
 Docker images for Arch Linux on x86_64, AArch32 (ARMv5TE, ARMv6, ARMv7-A) and AArch64 (ARMv8-A). Built using native pacman and Docker multi-stage builds. Built daily by GitHub Actions on publicly visible infrastructure using QEMU emulation to support ARM.
 
 ## Running the images
 
-The images are on [Docker Hub](https://hub.docker.com/u/lopsided/). Use the convenient `docker run`:
+The images are on [Docker Hub](https://hub.docker.com/u/mcharo/). Use the convenient `docker run`:
 
-    docker run --rm -ti lopsided/archlinux
+    docker run --rm -ti mcharo/archlinux
 
 Instead of using the multi-arch container above, you can also get the architecture specific image directly:
 
-    docker run --rm -ti lopsided/archlinux-arm32v7
+    docker run --rm -ti mcharo/archlinux-arm32v7
 
 ## Tags
 
@@ -27,7 +27,7 @@ images small.
 
 ## Issues and improvements
 
-If you want to contribute, get to the [issues-section of this repository](https://github.com/lopsided98/archlinux-docker/issues).
+If you want to contribute, get to the [issues-section of this repository](https://github.com/mcharo/archlinux-docker/issues).
 
 ## Common hurdles
 
@@ -36,7 +36,7 @@ If you want to contribute, get to the [issues-section of this repository](https:
 Simply add the `TZ` environment-variable and define it with a valid timezone-value.
 
 ```
-docker run -e TZ=America/New_York lopsided/archlinux
+docker run -e TZ=America/New_York mcharo/archlinux
 ```
 
 ## Building it yourself
@@ -67,7 +67,7 @@ architecture:
 
 ```
 gzip -d ArchLinuxARM-armv7-latest.tar.gz
-docker import ArchLinuxARM-armv7-latest.tar lopsided/archlinux-arm32v7:latest
+docker import ArchLinuxARM-armv7-latest.tar mcharo/archlinux-arm32v7:latest
 ```
 
 ## Credits
@@ -83,5 +83,5 @@ However, this repository takes a slightly different approach to create images.
 - https://github.com/archlinux/archlinux-docker
   - Focus on Arch Linux for x86
   - Uses docker run in priviledged mode to build images
-- https://github.com/lopsided98/archlinux
+- https://github.com/mcharo/archlinux
   - Uses prebuilt tarballs which contain packages not required in containers

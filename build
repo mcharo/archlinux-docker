@@ -1,8 +1,34 @@
 #!/bin/bash -ex
 
-DOCKER_ARCH=${BUILD_ARCH:-amd64}
-DOCKER_ORG=lopsided
+DOCKER_ARCH=${BUILD_ARCH:-arm64v8}
+DOCKER_ORG=mcharo
 DOCKER_IMAGE=archlinux-${DOCKER_ARCH}
+
+out() { printf "$1 $2\n" "${@:3}"; }
+error() { out "==> ERROR:" "$@"; } >&2
+die() { error "$@"; exit 1; }
+
+# get latest Arch Linux tarball
+arm32v5='http://os.archlinuxarm.org/os/ArchLinuxARM-armv5-latest.tar.gz'
+arm32v6='http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-latest.tar.gz'
+arm32v7='http://os.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz'
+arm64v8='http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz'
+LATEST_TARBALL="${!DOCKER_ARCH}"
+FILENAME="${LATEST_TARBALL##*/}"
+EXTRACTED_FILENAME="${FILENAME%.*}"
+wget "${LATEST_TARBALL}"
+wget "${LATEST_TARBALL}.md5"
+wget "${LATEST_TARBALL}.sig"
+
+# verify download is valid
+ARCHLINUXARM_SIGNING_ID=68B3537F39A313B3E574D06777193F152BDBE6A6
+gpg --fetch-key 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x'"${ARCHLINUXARM_SIGNING_ID}"
+md5sum -c "${FILENAME}.md5" || die "Checksum failed"
+echo -e "5\ny\n" | gpg --command-fd 0 --edit-key "${ARCHLINUXARM_SIGNING_ID}" trust
+gpg --verify "${FILENAME}.sig" || die "Signature verify failed"
+gzip -d "${FILENAME}"
+
+docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
 
 docker build --build-arg ARCH=${DOCKER_ARCH} \
   -t $DOCKER_ORG/$DOCKER_IMAGE \

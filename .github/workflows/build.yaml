@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         build-arch:
-          - amd64
           - arm32v5
           - arm32v6
           - arm32v7
