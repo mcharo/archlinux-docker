@@ -8,7 +8,7 @@ RUN mkdir -p /archlinux/rootfs
 COPY pacstrap-docker /archlinux/
 
 RUN ./pacstrap-docker /archlinux/rootfs \
-	    bash sed gzip pacman && \
+        bash sed gzip pacman && \
     # Remove current pacman database, likely outdated very soon
     rm rootfs/var/lib/pacman/sync/*
 
