@@ -33,8 +33,9 @@ gzip -d "${FILENAME}"
 
 if [[ "${DOCKER_ARCH}" = "amd64" ]]; then
   sudo tar xf "${EXTRACTED_FILENAME}" -C /tmp/
-  cd /tmp/root.x86_64
+  pushd /tmp/root.x86_64
   sudo tar -c . | docker import - "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
+  popd
 else
   docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
 fi
