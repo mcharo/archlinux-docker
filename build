@@ -33,7 +33,7 @@ gzip -d "${FILENAME}"
 
 if [[ "${DOCKER_ARCH}" = "amd64" ]]; then
   mkdir extract
-  tar xf "${EXTRACTED_FILENAME}" --strip-components -C extract
+  tar xf "${EXTRACTED_FILENAME}" --strip-components=1 -C extract
   pushd extract
   tar -c . | docker import - "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
   popd
