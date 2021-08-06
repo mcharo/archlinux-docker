@@ -31,7 +31,15 @@ fi
 md5sum -c "${FILENAME}.md5" || die "Checksum failed"
 gzip -d "${FILENAME}"
 
-docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
+if [[ "${DOCKER_ARCH}" = "amd64" ]]; then
+  mkdir extract
+  tar xf "${EXTRACTED_FILENAME}" --strip-components -C extract 2>/dev/null
+  pushd extract
+  tar -c . | docker import - "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
+  popd
+else
+  docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
+fi
 
 docker build --build-arg ARCH=${DOCKER_ARCH} \
   -t $DOCKER_ORG/$DOCKER_IMAGE \
