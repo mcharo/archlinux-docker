@@ -34,6 +34,7 @@ gzip -d "${FILENAME}"
 if [[ "${DOCKER_ARCH}" = "amd64" ]]; then
   sudo tar xf "${EXTRACTED_FILENAME}" -C /tmp/
   pushd /tmp/root.x86_64
+  grep Worldwide etc/pacman.d/mirrorlist -A 3 | tail -n +2 | grep -v evowise | tr -d '#' > etc/pacman.d/mirrorlist
   sudo tar -c . | docker import - "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
   popd
 else
