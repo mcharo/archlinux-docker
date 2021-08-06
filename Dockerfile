@@ -1,5 +1,5 @@
 ARG ARCH=arm64v8
-FROM mcharo/archlinux-$ARCH:latest-base
+FROM mcharo/archlinux:latest-base-$ARCH
 
 WORKDIR /archlinux
 

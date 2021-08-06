@@ -2,7 +2,14 @@
 
 DOCKER_ARCH=${BUILD_ARCH:-arm64v8}
 DOCKER_ORG=mcharo
-DOCKER_IMAGE=archlinux-${DOCKER_ARCH}
+DOCKER_IMAGE=archlinux
+if [[ "${DOCKER_ARCH:0:5}" = "arm32" ]]; then
+  DOCKER_PLATFORM="linux/arm/${DOCKER_ARCH:5:2}"
+elif [[ "${DOCKER_ARCH:0:5}" = "arm64" ]]; then
+  DOCKER_PLATFORM="linux/arm64/${DOCKER_ARCH:5:2}"
+elif [[ "${DOCKER_ARCH:0:5}" = "amd64" ]]; then
+  DOCKER_PLATFORM='linux/amd64'
+fi
 
 out() { printf "$1 $2\n" "${@:3}"; }
 error() { out "==> ERROR:" "$@"; } >&2
@@ -35,16 +42,18 @@ if [[ "${DOCKER_ARCH}" = "amd64" ]]; then
   sudo tar xf "${EXTRACTED_FILENAME}" -C /tmp/
   pushd /tmp/root.x86_64
   grep Worldwide etc/pacman.d/mirrorlist -A 3 | tail -n +2 | grep -v evowise | tr -d '#' | sudo tee etc/pacman.d/mirrorlist
-  sudo tar -c . | docker import - "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
+  sudo tar -c . | docker import - "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base-${DOCKER_ARCH}"
   popd
 else
-  docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
+  docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base-${DOCKER_ARCH}"
 fi
 
 docker build --build-arg ARCH=${DOCKER_ARCH} \
-  -t $DOCKER_ORG/$DOCKER_IMAGE \
+  -t ${DOCKER_ORG}/${DOCKER_IMAGE}:${DOCKER_ARCH} \
+  --platform=${DOCKER_PLATFORM} \
   -f Dockerfile .
 
 docker build --build-arg ARCH=${DOCKER_ARCH} \
-  -t $DOCKER_ORG/$DOCKER_IMAGE:devel \
+  -t ${DOCKER_ORG}/${DOCKER_IMAGE}:${DOCKER_ARCH}-devel \
+  --platform=${DOCKER_PLATFORM} \
   -f Dockerfile.devel .
