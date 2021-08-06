@@ -32,7 +32,7 @@ md5sum -c "${FILENAME}.md5" || die "Checksum failed"
 gzip -d "${FILENAME}"
 
 if [[ "${DOCKER_ARCH}" = "amd64" ]]; then
-  tar xf "${EXTRACTED_FILENAME}" -C /tmp/
+  sudo tar xf "${EXTRACTED_FILENAME}" -C /tmp/
   tar -c /tmp/root.x86_64 | docker import - "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
 else
   docker import "${EXTRACTED_FILENAME}" "${DOCKER_ORG}/${DOCKER_IMAGE}:latest-base"
